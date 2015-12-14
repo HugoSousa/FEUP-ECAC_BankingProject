@@ -52,17 +52,10 @@
         <parameter key="only_distinct" value="true"/>
         <parameter key="ignore_missings" value="true"/>
       </operator>
-      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve AccountsWithAvgTransactionAmount" width="90" x="45" y="570">
-        <parameter key="repository_entry" value="../Data/AccountsWithAvgTransactionAmount"/>
-      </operator>
-      <operator activated="true" class="join" compatibility="6.5.002" expanded="true" height="76" name="Join (2)" width="90" x="313" y="480">
-        <parameter key="remove_double_attributes" value="true"/>
-        <parameter key="join_type" value="inner"/>
-        <parameter key="use_id_attribute_as_key" value="false"/>
-        <list key="key_attributes">
-          <parameter key="account_id" value="account_id"/>
-        </list>
-        <parameter key="keep_both_join_attributes" value="false"/>
+      <operator activated="true" class="set_role" compatibility="6.5.002" expanded="true" height="76" name="Set Role" width="90" x="447" y="390">
+        <parameter key="attribute_name" value="account_id"/>
+        <parameter key="target_role" value="id"/>
+        <list key="set_additional_roles"/>
       </operator>
       <operator activated="true" class="rename" compatibility="6.5.002" expanded="true" height="76" name="Rename" width="90" x="514" y="480">
         <parameter key="old_name" value="maximum(balance)"/>
@@ -72,17 +65,18 @@
         </list>
       </operator>
       <operator activated="true" class="store" compatibility="6.5.002" expanded="true" height="60" name="Store" width="90" x="715" y="480">
-        <parameter key="repository_entry" value="../Data/AccountsWithAvgTransactionAmountAndMinMaxBalance"/>
+        <parameter key="repository_entry" value="../../Data/Modified/AccountsWithAvgTransactionAmountAndMinMaxBalance"/>
       </operator>
       <connect from_op="Retrieve Transactions" from_port="output" to_op="Join" to_port="left"/>
       <connect from_op="Retrieve Accounts" from_port="output" to_op="Join" to_port="right"/>
       <connect from_op="Join" from_port="join" to_op="Aggregate" to_port="example set input"/>
-      <connect from_op="Aggregate" from_port="example set output" to_op="Join (2)" to_port="left"/>
-      <connect from_op="Retrieve AccountsWithAvgTransactionAmount" from_port="output" to_op="Join (2)" to_port="right"/>
-      <connect from_op="Join (2)" from_port="join" to_op="Rename" to_port="example set input"/>
+      <connect from_op="Aggregate" from_port="example set output" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Rename" to_port="example set input"/>
       <connect from_op="Rename" from_port="example set output" to_op="Store" to_port="input"/>
+      <connect from_op="Store" from_port="through" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
     </process>
   </operator>
 </process>
