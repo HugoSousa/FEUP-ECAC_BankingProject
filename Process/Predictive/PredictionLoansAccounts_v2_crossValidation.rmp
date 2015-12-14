@@ -13,17 +13,17 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve AccountWithMensalIncomeExpenseMetadata" width="90" x="45" y="390">
-        <parameter key="repository_entry" value="//BankingProject/Data/AccountWithMensalIncomeExpenseMetadata"/>
-      </operator>
       <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve Loans" width="90" x="45" y="75">
         <parameter key="repository_entry" value="//BankingProject/Data/Loans"/>
       </operator>
-      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve AccountWithOwnerAge" width="90" x="45" y="525">
-        <parameter key="repository_entry" value="../Data/AccountWithOwnerAge"/>
+      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve AccountWithMensalIncomeExpenseMetadata" width="90" x="45" y="345">
+        <parameter key="repository_entry" value="../../Data/Modified/AccountWithMensalIncomeExpenseMetadata"/>
       </operator>
-      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve Districts" width="90" x="246" y="570">
-        <parameter key="repository_entry" value="../Data/Districts"/>
+      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve AccountWithOwnerAge" width="90" x="45" y="480">
+        <parameter key="repository_entry" value="../../Data/Modified/AccountWithOwnerAge"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve Districts" width="90" x="179" y="570">
+        <parameter key="repository_entry" value="../../Data/Districts"/>
       </operator>
       <operator activated="true" class="join" compatibility="6.5.002" expanded="true" height="76" name="Join (2)" width="90" x="246" y="390">
         <parameter key="remove_double_attributes" value="true"/>
@@ -173,8 +173,8 @@
           <portSpacing port="sink_averagable 2" spacing="0"/>
         </process>
       </operator>
-      <connect from_op="Retrieve AccountWithMensalIncomeExpenseMetadata" from_port="output" to_op="Join (2)" to_port="left"/>
       <connect from_op="Retrieve Loans" from_port="output" to_op="Join" to_port="left"/>
+      <connect from_op="Retrieve AccountWithMensalIncomeExpenseMetadata" from_port="output" to_op="Join (2)" to_port="left"/>
       <connect from_op="Retrieve AccountWithOwnerAge" from_port="output" to_op="Join (2)" to_port="right"/>
       <connect from_op="Retrieve Districts" from_port="output" to_op="Join (3)" to_port="right"/>
       <connect from_op="Join (2)" from_port="join" to_op="Join (3)" to_port="left"/>
