@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process version="6.5.002">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="6.5.002" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve Accounts" width="90" x="179" y="120">
+        <parameter key="repository_entry" value="//BankingProject/Data/Accounts"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve Accounts_Clients" width="90" x="45" y="390">
+        <parameter key="repository_entry" value="//BankingProject/Data/Accounts_Clients"/>
+      </operator>
+      <operator activated="true" class="filter_examples" compatibility="6.5.002" expanded="true" height="94" name="Filter Examples" width="90" x="246" y="390">
+        <parameter key="parameter_expression" value=""/>
+        <parameter key="condition_class" value="custom_filters"/>
+        <parameter key="invert_filter" value="false"/>
+        <list key="filters_list">
+          <parameter key="filters_entry_key" value="type.equals.OWNER"/>
+        </list>
+        <parameter key="filters_logic_and" value="true"/>
+        <parameter key="filters_check_metadata" value="true"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="6.5.002" expanded="true" height="60" name="Retrieve Clients" width="90" x="112" y="300">
+        <parameter key="repository_entry" value="//BankingProject/Data/Clients"/>
+      </operator>
+      <operator activated="true" class="join" compatibility="6.5.002" expanded="true" height="76" name="Join" width="90" x="313" y="210">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="client_id" value="client_id"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="set_role" compatibility="6.5.002" expanded="true" height="76" name="Set Role" width="90" x="447" y="300">
+        <parameter key="attribute_name" value="client_id"/>
+        <parameter key="target_role" value="regular"/>
+        <list key="set_additional_roles"/>
+      </operator>
+      <operator activated="true" class="join" compatibility="6.5.002" expanded="true" height="76" name="Join (2)" width="90" x="514" y="165">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="account_id" value="account_id"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="adjust_date" compatibility="6.5.002" expanded="true" height="76" name="Adjust Date" width="90" x="581" y="390">
+        <parameter key="attribute_name" value="birth_date_real"/>
+        <list key="adjustments">
+          <parameter key="-1999" value="Year"/>
+        </list>
+        <parameter key="keep_old_attribute" value="false"/>
+      </operator>
+      <operator activated="true" class="adjust_date" compatibility="6.5.002" expanded="true" height="76" name="Adjust Date (2)" width="90" x="715" y="390">
+        <parameter key="attribute_name" value="date"/>
+        <list key="adjustments">
+          <parameter key="-1999" value="Year"/>
+        </list>
+        <parameter key="keep_old_attribute" value="false"/>
+      </operator>
+      <operator activated="true" class="date_to_nominal" compatibility="6.5.002" expanded="true" height="76" name="Date to Nominal" width="90" x="849" y="390">
+        <parameter key="attribute_name" value="birth_date_real"/>
+        <parameter key="date_format" value="yy"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="keep_old_attribute" value="false"/>
+      </operator>
+      <operator activated="true" class="date_to_nominal" compatibility="6.5.002" expanded="true" height="76" name="Date to Nominal (2)" width="90" x="949" y="300">
+        <parameter key="attribute_name" value="date"/>
+        <parameter key="date_format" value="y"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="keep_old_attribute" value="false"/>
+      </operator>
+      <operator activated="true" class="rename" compatibility="6.5.002" expanded="true" height="76" name="Rename" width="90" x="916" y="165">
+        <parameter key="old_name" value="birth_date_real"/>
+        <parameter key="new_name" value="owner_age"/>
+        <list key="rename_additional_attributes">
+          <parameter key="date" value="account_age"/>
+          <parameter key="client_id" value="owner_id"/>
+        </list>
+      </operator>
+      <operator activated="true" class="store" compatibility="6.5.002" expanded="true" height="60" name="Store" width="90" x="916" y="75">
+        <parameter key="repository_entry" value="../../Data/Modified/AccountWithOwnerAge"/>
+      </operator>
+      <connect from_op="Retrieve Accounts" from_port="output" to_op="Join (2)" to_port="left"/>
+      <connect from_op="Retrieve Accounts_Clients" from_port="output" to_op="Filter Examples" to_port="example set input"/>
+      <connect from_op="Filter Examples" from_port="example set output" to_op="Join" to_port="right"/>
+      <connect from_op="Retrieve Clients" from_port="output" to_op="Join" to_port="left"/>
+      <connect from_op="Join" from_port="join" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Join (2)" to_port="right"/>
+      <connect from_op="Join (2)" from_port="join" to_op="Adjust Date" to_port="example set input"/>
+      <connect from_op="Adjust Date" from_port="example set output" to_op="Adjust Date (2)" to_port="example set input"/>
+      <connect from_op="Adjust Date (2)" from_port="example set output" to_op="Date to Nominal" to_port="example set input"/>
+      <connect from_op="Date to Nominal" from_port="example set output" to_op="Date to Nominal (2)" to_port="example set input"/>
+      <connect from_op="Date to Nominal (2)" from_port="example set output" to_op="Rename" to_port="example set input"/>
+      <connect from_op="Rename" from_port="example set output" to_op="Store" to_port="input"/>
+      <connect from_op="Store" from_port="through" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
