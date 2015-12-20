@@ -128,6 +128,64 @@
         <parameter key="use_local_random_seed" value="false"/>
         <parameter key="local_random_seed" value="1992"/>
         <process expanded="true">
+          <operator activated="true" class="multiply" compatibility="6.5.002" expanded="true" height="166" name="Multiply" width="90" x="45" y="30"/>
+          <operator activated="true" class="k_nn" compatibility="6.5.002" expanded="true" height="76" name="k-NN" width="90" x="179" y="705">
+            <parameter key="k" value="4"/>
+            <parameter key="weighted_vote" value="false"/>
+            <parameter key="measure_types" value="BregmanDivergences"/>
+            <parameter key="mixed_measure" value="MixedEuclideanDistance"/>
+            <parameter key="nominal_measure" value="NominalDistance"/>
+            <parameter key="numerical_measure" value="EuclideanDistance"/>
+            <parameter key="divergence" value="SquaredEuclideanDistance"/>
+            <parameter key="kernel_type" value="radial"/>
+            <parameter key="kernel_gamma" value="1.0"/>
+            <parameter key="kernel_sigma1" value="1.0"/>
+            <parameter key="kernel_sigma2" value="0.0"/>
+            <parameter key="kernel_sigma3" value="2.0"/>
+            <parameter key="kernel_degree" value="3.0"/>
+            <parameter key="kernel_shift" value="1.0"/>
+            <parameter key="kernel_a" value="1.0"/>
+            <parameter key="kernel_b" value="0.0"/>
+          </operator>
+          <operator activated="true" class="perceptron" compatibility="6.5.002" expanded="true" height="76" name="Perceptron" width="90" x="179" y="615">
+            <parameter key="rounds" value="3"/>
+            <parameter key="learning_rate" value="0.05"/>
+          </operator>
+          <operator activated="true" class="rule_induction" compatibility="6.5.002" expanded="true" height="76" name="Rule Induction" width="90" x="179" y="480">
+            <parameter key="criterion" value="information_gain"/>
+            <parameter key="sample_ratio" value="0.9"/>
+            <parameter key="pureness" value="0.9"/>
+            <parameter key="minimal_prune_benefit" value="0.2"/>
+            <parameter key="use_local_random_seed" value="false"/>
+            <parameter key="local_random_seed" value="1992"/>
+          </operator>
+          <operator activated="true" class="support_vector_machine" compatibility="6.5.002" expanded="true" height="112" name="SVM" width="90" x="179" y="300">
+            <parameter key="kernel_type" value="dot"/>
+            <parameter key="kernel_gamma" value="1.0"/>
+            <parameter key="kernel_sigma1" value="1.0"/>
+            <parameter key="kernel_sigma2" value="0.0"/>
+            <parameter key="kernel_sigma3" value="2.0"/>
+            <parameter key="kernel_shift" value="1.0"/>
+            <parameter key="kernel_degree" value="2.0"/>
+            <parameter key="kernel_a" value="1.0"/>
+            <parameter key="kernel_b" value="0.0"/>
+            <parameter key="kernel_cache" value="200"/>
+            <parameter key="C" value="0.0"/>
+            <parameter key="convergence_epsilon" value="0.001"/>
+            <parameter key="max_iterations" value="100000"/>
+            <parameter key="scale" value="true"/>
+            <parameter key="calculate_weights" value="true"/>
+            <parameter key="return_optimization_performance" value="true"/>
+            <parameter key="L_pos" value="1.0"/>
+            <parameter key="L_neg" value="1.0"/>
+            <parameter key="epsilon" value="0.0"/>
+            <parameter key="epsilon_plus" value="0.0"/>
+            <parameter key="epsilon_minus" value="0.0"/>
+            <parameter key="balance_cost" value="false"/>
+            <parameter key="quadratic_loss_pos" value="false"/>
+            <parameter key="quadratic_loss_neg" value="false"/>
+            <parameter key="estimate_performance" value="false"/>
+          </operator>
           <operator activated="true" class="parallel_decision_tree" compatibility="6.5.002" expanded="true" height="76" name="Decision Tree" width="90" x="179" y="30">
             <parameter key="criterion" value="gain_ratio"/>
             <parameter key="maximal_depth" value="20"/>
@@ -139,7 +197,16 @@
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="number_of_prepruning_alternatives" value="3"/>
           </operator>
-          <connect from_port="training" to_op="Decision Tree" to_port="training set"/>
+          <operator activated="true" class="naive_bayes" compatibility="6.5.002" expanded="true" height="76" name="Naive Bayes" width="90" x="179" y="165">
+            <parameter key="laplace_correction" value="true"/>
+          </operator>
+          <connect from_port="training" to_op="Multiply" to_port="input"/>
+          <connect from_op="Multiply" from_port="output 1" to_op="Decision Tree" to_port="training set"/>
+          <connect from_op="Multiply" from_port="output 2" to_op="Naive Bayes" to_port="training set"/>
+          <connect from_op="Multiply" from_port="output 3" to_op="SVM" to_port="training set"/>
+          <connect from_op="Multiply" from_port="output 4" to_op="Rule Induction" to_port="training set"/>
+          <connect from_op="Multiply" from_port="output 5" to_op="Perceptron" to_port="training set"/>
+          <connect from_op="Multiply" from_port="output 6" to_op="k-NN" to_port="training set"/>
           <connect from_op="Decision Tree" from_port="model" to_port="model"/>
           <connect from_op="Decision Tree" from_port="exampleSet" to_port="through 1"/>
           <portSpacing port="source_training" spacing="0"/>
